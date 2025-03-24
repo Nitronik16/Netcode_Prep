@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -5,6 +6,9 @@ using UnityEngine;
 public class PlayerNetwork : NetworkBehaviour
 {
     Vector3 moveDir = Vector3.zero;
+
+    [SerializeField] private Transform spawnedObjectPrefab;
+    private Transform spawnedObjectTransform;
 
     private NetworkVariable<MyCustomData> randomNumber = 
         new NetworkVariable<MyCustomData>(
@@ -45,7 +49,12 @@ public class PlayerNetwork : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.T))
         {
-            TestServerRpc();
+
+            spawnedObjectTransform = Instantiate(spawnedObjectPrefab);
+            spawnedObjectTransform.GetComponent<NetworkObject>().Spawn(true);
+
+
+            //TestClientRpc(new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = new List<ulong> { 1 } } });
 
             /*
             randomNumber.Value = new MyCustomData
@@ -55,6 +64,11 @@ public class PlayerNetwork : NetworkBehaviour
                 message = "All your base are belong to us!"
             };
             */
+        }
+
+        if (Input.GetKeyDown(KeyCode.Y) && spawnedObjectTransform != null)
+        {
+            spawnedObjectTransform.GetComponent<NetworkObject>().Despawn(true);
         }
 
         if (Input.GetKey(KeyCode.W)) moveDir.z = +1f;
@@ -69,9 +83,17 @@ public class PlayerNetwork : NetworkBehaviour
         transform.position += moveDir * moveSpeed * Time.deltaTime;
     }
 
+    //clients send a message to the server/host 
     [ServerRpc]
-    private void TestServerRpc()
+    private void TestServerRpc(ServerRpcParams serverRpcParams)
     {
-        Debug.Log("TestServerRpc " + OwnerClientId);
+        Debug.Log("TestServerRpc " + OwnerClientId + "; " + serverRpcParams.Receive.SenderClientId);
+    }
+
+    //server/hos sends a message to all/specified clients 
+    [ClientRpc]
+    private void TestClientRpc(ClientRpcParams clientRpcParams)
+    {
+        Debug.Log("TestClientRpc");
     }
 }
