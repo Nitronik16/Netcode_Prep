@@ -66,7 +66,7 @@ public class PlayerNetwork : NetworkBehaviour
             */
         }
 
-        if (Input.GetKeyDown(KeyCode.Y) && spawnedObjectTransform != null)
+        if (Input.GetKeyDown(KeyCode.Y))
         {
             spawnedObjectTransform.GetComponent<NetworkObject>().Despawn(true);
         }
