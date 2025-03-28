@@ -3,7 +3,6 @@ using Unity.Services.Core;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
-using Unity.VisualScripting;
 using System.Collections.Generic;
 
 public class TestLobby : MonoBehaviour
